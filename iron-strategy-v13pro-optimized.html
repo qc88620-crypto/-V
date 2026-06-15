@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>钢铁策略 · 铁血时代 · 世界版图 V13 Pro · 优化版 - Iron Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* =============================================
+   CSS 变量定义 - 全局主题色
+   ============================================= */
+:root {
+  --bg-darkest: #0a0c0f;
+  --bg-dark: #0f1219;
+  --bg-panel: #131720;
+  --bg-card: #1a2030;
+  --bg-hover: #212840;
+  --bg-active: #2a3555;
+  --border-color: #2a3555;
+  --border-bright: #3d5080;
+  --text-primary: #d0d8f0;
+  --text-secondary: #8090b0;
+  --text-muted: #4a5570;
+  --accent-gold: #c8a84b;
+  --accent-gold-bright: #f0c860;
+  --accent-blue: #4488cc;
+  --accent-blue-bright: #66aaee;
+  --accent-green: #44aa66;
+  --accent-green-bright: #66cc88;
+  --accent-red: #cc4444;
+  --accent-red-bright: #ee6666;
+  --accent-orange: #cc7722;
+  --accent-purple: #8855cc;
+  --war-red: #ff2244;
+  --peace-blue: #2244ff;
+  --stability-green: #44cc88;
+  --war-support-orange: #ff8844;
+  --sidebar-width: 180px;
+  --sidebar-collapsed: 0px;
+  --header-height: 44px;
+  --font-main: 'Rajdhani', 'Noto Serif SC', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-title: 'Orbitron', sans-serif;
+  --shadow-panel: 0 0 30px rgba(0,0,0,0.8);
+  --shadow-glow-gold: 0 0 15px rgba(200,168,75,0.4);
+  --shadow-glow-blue: 0 0 15px rgba(68,136,204,0.4);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 140px;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg-darkest);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =============================================
+   初始页面 - 学习维多利亚三风格
+   ============================================= */
+#start-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #0a0c0f 0%, #1a1830 50%, #0f1525 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  font-family: var(--font-title);
+}
+
+.start-screen-content {
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+.start-title {
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--accent-gold);
+  letter-spacing: 4px;
+  text-shadow: 0 0 40px rgba(200,168,75,0.6), 0 0 80px rgba(200,168,75,0.3);
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.start-subtitle {
+  font-size: 24px;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  margin-bottom: 60px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.start-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.start-btn {
+  padding: 16px 48px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: 2px solid var(--accent-gold);
+  background: rgba(200,168,75,0.1);
+  color: var(--accent-gold-bright);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  min-width: 200px;
+  font-family: var(--font-title);
+}
+
+.start-btn:hover {
+  background: rgba(200,168,75,0.3);
+  box-shadow: 0 0 30px rgba(200,168,75,0.5), inset 0 0 20px rgba(200,168,75,0.2);
+  transform: translateY(-2px);
+}
+
+.start-btn.secondary {
+  border-color: var(--accent-blue);
+  background: rgba(68,136,204,0.1);
+  color: var(--accent-blue-bright);
+}
+
+.start-btn.secondary:hover {
+  background: rgba(68,136,204,0.3);
+  box-shadow: 0 0 30px rgba(68,136,204,0.5), inset 0 0 20px rgba(68,136,204,0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================
+   顶部头部栏
+   ============================================= */
+#header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-height);
+  background: linear-gradient(180deg, #0d1018 0%, #131720 100%);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.6);
+}
+
+#game-title {
+  font-family: var(--font-title);
+  font-size: 12px;
+  color: var(--accent-gold);
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(200,168,75,0.6);
+}
+
+#header-date {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 2px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+#header-resources {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.res-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  min-width: 60px;
+}
+
+.res-chip:hover { border-color: var(--border-bright); }
+.res-chip .res-icon { font-size: 13px; }
+.res-chip .res-val { color: var(--text-primary); font-weight: 500; }
+.res-chip .res-delta { font-size: 9px; }
+.res-chip .res-delta.pos { color: var(--accent-green-bright); }
+.res-chip .res-delta.neg { color: var(--accent-red-bright); }
+
+#header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#btn-end-turn {
+  font-family: var(--font-title);
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 5px 14px;
+  background: linear-gradient(135deg, #1a2a4a, #2a4a7a);
+  border: 1px solid var(--accent-blue);
+  border-radius: var(--radius-sm);
+  color: var(--accent-blue-bright);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+#btn-end-turn:hover {
+  background: linear-gradient(135deg, #2a3a6a, #3a5a9a);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+/* =============================================
+   主布局 - 改进的侧边栏
+   ============================================= */
+#main-layout {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr auto;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+
+/* 左侧边栏 - 精简化 */
+#left-sidebar {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-panel);
+}
+
+.sidebar-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-tab:last-child {
+  border-bottom: none;
+}
+
+.tab-header {
+  padding: 8px;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab-header:hover {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+}
+
+.tab-header.active {
+  background: rgba(200,168,75,0.1);
+  color: var(--accent-gold);
+  border-bottom-color: var(--accent-gold);
+}
+
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px;
+  font-size: 11px;
+}
+
+.tab-content::-webkit-scrollbar {
+  width: 3px;
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+/* =============================================
+   地图区域
+   ============================================= */
+#map-area {
+  position: relative;
+  overflow: hidden;
+  background: #060810;
+  grid-column: 2;
+}
+
+#map-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: grab;
+  image-rendering: auto;
+}
+
+#map-canvas:active {
+  cursor: grabbing;
+}
+
+/* 鼠标悬停提示 */
+.map-tooltip {
+  position: absolute;
+  background: rgba(10, 12, 15, 0.95);
+  border: 1px solid var(--accent-gold);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 500;
+  box-shadow: 0 0 20px rgba(200,168,75,0.3);
+  white-space: nowrap;
+}
+
+/* =============================================
+   右侧面板 - 国家详情（HOI4风格）
+   ============================================= */
+#right-panel {
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: auto;
+  min-width: 0;
+  box-shadow: var(--shadow-panel);
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.right-panel-header {
+  padding: 12px;
+  background: var(--bg-dark);
+  border-bottom: 2px solid var(--accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.country-flag-display {
+  width: 40px;
+  height: 26px;
+  border: 2px solid var(--accent-gold);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.country-header-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.country-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  font-family: var(--font-title);
+  letter-spacing: 1px;
+}
+
+.country-status {
+  font-size: 10px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.right-panel-close {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all var(--transition-fast);
+}
+
+.right-panel-close:hover {
+  border-color: var(--accent-red);
+  color: var(--accent-red-bright);
+}
+
+.right-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.right-panel-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.right-panel-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+/* 国家统计信息 */
+.country-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.stat-card {
+  padding: 8px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  font-family: var(--font-mono);
+}
+
+.stat-delta {
+  font-size: 9px;
+  margin-top: 2px;
+}
+
+.stat-delta.pos { color: var(--accent-green-bright); }
+.stat-delta.neg { color: var(--accent-red-bright); }
+
+/* 进度条 */
+.progress-section {
+  margin-bottom: 10px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  margin-bottom: 4px;
+  color: var(--text-secondary);
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.fill-war { background: linear-gradient(90deg, #cc4444, #ee6666); }
+.fill-research { background: linear-gradient(90deg, #8833aa, #aa55cc); }
+.fill-industry { background: linear-gradient(90deg, #2244aa, #4488cc); }
+
+/* =============================================
+   底部操作栏
+   ============================================= */
+#bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(180deg, rgba(12,16,28,0.95), rgba(8,12,22,0.98));
+  border-top: 1px solid rgba(200,168,75,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px;
+  z-index: 200;
+  gap: 4px;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px;
+  background: rgba(20,28,48,0.8);
+  border: 1px solid rgba(60,80,120,0.4);
+  border-radius: 6px;
+  color: #a0b0d0;
+  cursor: pointer;
+  min-width: 50px;
+  min-height: 46px;
+  font-family: var(--font-main);
+  font-weight: 600;
+  transition: all 0.15s ease;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.action-btn:hover,
+.action-btn.active {
+  background: rgba(200,168,75,0.15);
+  border-color: rgba(200,168,75,0.6);
+  color: #f0c860;
+}
+
+.action-btn-icon { font-size: 18px; }
+.action-btn-label { font-size: 8px; }
+
+/* =============================================
+   右下角小地图和控件
+   ============================================= */
+#minimap-container {
+  position: fixed;
+  bottom: 56px;
+  right: 12px;
+  width: 120px;
+  height: 90px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  z-index: 100;
+}
+
+#zoom-controls {
+  position: fixed;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+}
+
+.zoom-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(20,28,48,0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.zoom-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* =============================================
+   卡片和面板通用样式
+   ============================================= */
+.panel-card {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  margin-bottom: 6px;
+  transition: border-color var(--transition-fast);
+}
+
+.panel-card:hover {
+  border-color: var(--border-bright);
+}
+
+.card-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* =============================================
+   响应式设计
+   ============================================= */
+@media (max-width: 1200px) {
+  #main-layout {
+    grid-template-columns: 120px 1fr auto;
+  }
+}
+
+@media (max-width: 768px) {
+  #left-sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--header-height);
+    width: 180px;
+    height: calc(100% - var(--header-height) - 50px);
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  #left-sidebar.open {
+    transform: translateX(0);
+  }
+
+  #main-layout {
+    grid-template-columns: 1fr auto;
+  }
+
+  #map-area {
+    grid-column: 1;
+  }
+
+  #right-panel {
+    width: 280px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- 初始页面 -->
+<div id="start-screen">
+  <div class="start-screen-content">
+    <div class="start-title">IRON STRATEGY</div>
+    <div class="start-subtitle">铁血时代 · 世界版图</div>
+    <div class="start-buttons">
+      <button class="start-btn" onclick="startGame()">开始新游戏</button>
+      <button class="start-btn secondary" onclick="loadGame()">加载游戏</button>
+    </div>
+  </div>
+</div>
+
+<!-- 顶部头部 -->
+<header id="header">
+  <div id="header-left">
+    <div id="game-title">IRON STRATEGY</div>
+  </div>
+  <div id="header-date">Year 1936</div>
+  <div id="header-resources">
+    <div class="res-chip">
+      <span class="res-icon">💰</span>
+      <span class="res-val">10000</span>
+      <span class="res-delta pos">+50</span>
+    </div>
+    <div class="res-chip">
+      <span class="res-icon">⚙️</span>
+      <span class="res-val">500</span>
+      <span class="res-delta pos">+10</span>
+    </div>
+    <div class="res-chip">
+      <span class="res-icon">🔬</span>
+      <span class="res-val">300</span>
+      <span class="res-delta neutral">0</span>
+    </div>
+  </div>
+  <div id="header-right">
+    <button id="btn-end-turn">END TURN</button>
+  </div>
+</header>
+
+<!-- 主布局 -->
+<div id="main-layout">
+  <!-- 左侧边栏 -->
+  <div id="left-sidebar">
+    <div class="sidebar-tabs">
+      <!-- 国家标签 -->
+      <div class="sidebar-tab">
+        <div class="tab-header active">📍 Country</div>
+        <div class="tab-content">
+          <div class="panel-card">
+            <div class="card-title">国家信息</div>
+            <div style="font-size: 10px; color: var(--text-secondary);">
+              <div style="margin-bottom: 4px;"><strong>稳定度:</strong> 75%</div>
+              <div style="margin-bottom: 4px;"><strong>战争支持:</strong> 35%</div>
+              <div><strong>外交:</strong> 中立</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 建筑标签 -->
+      <div class="sidebar-tab">
+        <div class="tab-header">🏗️ Build</div>
+        <div class="tab-content">
+          <div class="panel-card">
+            <div class="card-title">可用建筑</div>
+            <div style="font-size: 10px;">
+              <div style="padding: 4px; margin-bottom: 4px; background: rgba(200,168,75,0.1); border-radius: 3px; cursor: pointer;">🏭 工厂</div>
+              <div style="padding: 4px; margin-bottom: 4px; background: rgba(68,136,204,0.1); border-radius: 3px; cursor: pointer;">🛞 军工厂</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 科技标签 -->
+      <div class="sidebar-tab">
+        <div class="tab-header">🔬 Tech</div>
+        <div class="tab-content">
+          <div class="panel-card">
+            <div class="card-title">科技研究</div>
+            <div style="font-size: 9px; color: var(--text-secondary);">
+              <div style="margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                  <span>坦克装甲</span>
+                  <span>45%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill fill-research" style="width: 45%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 外交标签 -->
+      <div class="sidebar-tab">
+        <div class="tab-header">🤝 Diplomacy</div>
+        <div class="tab-content">
+          <div class="panel-card">
+            <div class="card-title">外交关系</div>
+            <div style="font-size: 10px;">
+              <div style="padding: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; background: rgba(0,0,0,0.2); border-radius: 3px;">
+                <span>🇩🇪 德国</span>
+                <span style="color: var(--accent-red-bright);">-50</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 地图区域 -->
+  <div id="map-area">
+    <canvas id="map-canvas"></canvas>
+    <div id="minimap-container"></div>
+    <div id="zoom-controls">
+      <button class="zoom-btn">+</button>
+      <button class="zoom-btn">−</button>
+    </div>
+  </div>
+
+  <!-- 右侧面板（国家详情）-->
+  <div id="right-panel" style="display: none; width: 320px;">
+    <div class="right-panel-header">
+      <div class="country-flag-display"></div>
+      <div class="country-header-info">
+        <div class="country-name">德国</div>
+        <div class="country-status">大国 · 交战状态</div>
+      </div>
+      <button class="right-panel-close" onclick="closeCountryPanel()">✕</button>
+    </div>
+    <div class="right-panel-content">
+      <div class="country-stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">工业</div>
+          <div class="stat-value">450</div>
+          <div class="stat-delta pos">+15</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">人力</div>
+          <div class="stat-value">850k</div>
+          <div class="stat-delta pos">+25k</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">稳定度</div>
+          <div class="stat-value">65%</div>
+          <div class="stat-delta neg">-5%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">战争支持</div>
+          <div class="stat-value">78%</div>
+          <div class="stat-delta pos">+8%</div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>政治权力</span>
+          <span>75/100</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill fill-war" style="width: 75%;"></div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div class="card-title">军事部队</div>
+        <div style="font-size: 9px; color: var(--text-secondary);">
+          <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-color);">
+            <span>🚂 陆军集团</span>
+            <span>24</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border-color);">
+            <span>⛵ 海军舰队</span>
+            <span>12</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 4px 0;">
+            <span>✈️ 空中中队</span>
+            <span>48</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 底部操作栏 -->
+<div id="bottom-action-bar">
+  <button class="action-btn" onclick="actionBuild()">
+    <span class="action-btn-icon">🏗️</span>
+    <span class="action-btn-label">Build</span>
+  </button>
+  <button class="action-btn" onclick="actionRecruit()">
+    <span class="action-btn-icon">🪖</span>
+    <span class="action-btn-label">Recruit</span>
+  </button>
+  <button class="action-btn" onclick="actionDiplomacy()">
+    <span class="action-btn-icon">🤝</span>
+    <span class="action-btn-label">Diplomacy</span>
+  </button>
+  <button class="action-btn" onclick="actionTrade()">
+    <span class="action-btn-icon">📦</span>
+    <span class="action-btn-label">Trade</span>
+  </button>
+  <button class="action-btn" onclick="actionResearch()">
+    <span class="action-btn-icon">🔬</span>
+    <span class="action-btn-label">Research</span>
+  </button>
+</div>
+
+<script>
+// =============================================
+// 核心游戏逻辑
+// =============================================
+
+function startGame() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('header').style.display = 'flex';
+  document.getElementById('main-layout').style.display = 'grid';
+  document.getElementById('bottom-action-bar').style.display = 'flex';
+  initMap();
+}
+
+function loadGame() {
+  alert('加载功能待开发');
+}
+
+function closeCountryPanel() {
+  document.getElementById('right-panel').style.display = 'none';
+}
+
+function showCountryPanel(countryName) {
+  document.getElementById('right-panel').style.display = 'flex';
+}
+
+// 地图初始化
+function initMap() {
+  const canvas = document.getElementById('map-canvas');
+  const mapArea = document.getElementById('map-area');
+  
+  canvas.width = mapArea.clientWidth;
+  canvas.height = mapArea.clientHeight;
+  
+  const ctx = canvas.getContext('2d');
+  
+  // 绘制简单的世界地图背景
+  ctx.fillStyle = '#0a1020';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // 绘制示意省份
+  ctx.fillStyle = '#2a4a7a';
+  ctx.fillRect(100, 100, 150, 120);
+  ctx.fillStyle = '#1a3a5a';
+  ctx.fillRect(300, 150, 180, 100);
+  
+  // 添加地图交互
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // 简单的点击检测
+    if (x > 100 && x < 250 && y > 100 && y < 220) {
+      showCountryPanel('德国');
+    }
+  });
+}
+
+// 底部按钮事件
+function actionBuild() { alert('建筑菜单'); }
+function actionRecruit() { alert('征兵菜单'); }
+function actionDiplomacy() { alert('外交菜单'); }
+function actionTrade() { alert('贸易菜单'); }
+function actionResearch() { alert('研究菜单'); }
+
+// 窗口大小调整
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('map-canvas');
+  if (canvas) {
+    const mapArea = document.getElementById('map-area');
+    canvas.width = mapArea.clientWidth;
+    canvas.height = mapArea.clientHeight;
+  }
+});
+
+// 标签页切换
+document.querySelectorAll('.tab-header').forEach(header => {
+  header.addEventListener('click', (e) => {
+    const tab = e.currentTarget.parentElement;
+    const siblings = tab.parentElement.querySelectorAll('.sidebar-tab');
+    
+    siblings.forEach(t => {
+      t.querySelector('.tab-header').classList.remove('active');
+      t.querySelector('.tab-content').style.display = 'none';
+    });
+    
+    e.currentTarget.classList.add('active');
+    tab.querySelector('.tab-content').style.display = 'block';
+  });
+});
+
+// 初始化地图（游戏开始时）
+window.addEventListener('load', () => {
+  // 页面加载完成
+});
+
+</script>
+
+</body>
+</html>
